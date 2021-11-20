@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infra", "infra", "{A64D9C58-F97B-4936-A691-3847359A62B4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipeline", "pipeline", "{EF9C3D6A-B00B-465F-BA95-AC168B16F814}"
+	ProjectSection(SolutionItems) = preProject
+		infra\pipeline\azure-pipelines.yml = infra\pipeline\azure-pipelines.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{46D986A9-D221-45D7-AEB1-79DEC5B5B389}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoNetCoreApp", "src\DemoNetCoreApp\DemoNetCoreApp.csproj", "{B612A282-E899-4754-92FD-4E3F7782C486}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B612A282-E899-4754-92FD-4E3F7782C486}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B612A282-E899-4754-92FD-4E3F7782C486}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B612A282-E899-4754-92FD-4E3F7782C486}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B612A282-E899-4754-92FD-4E3F7782C486}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EF9C3D6A-B00B-465F-BA95-AC168B16F814} = {A64D9C58-F97B-4936-A691-3847359A62B4}
+		{B612A282-E899-4754-92FD-4E3F7782C486} = {46D986A9-D221-45D7-AEB1-79DEC5B5B389}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {19FE5ABB-87DC-49DC-A485-85E2431BAB98}
+	EndGlobalSection
+EndGlobal

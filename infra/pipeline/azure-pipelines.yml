@@ -1,0 +1,89 @@
+name: $(Build.SourceBranchName)-$(date:yyyyMMdd)$(rev:.r)
+
+trigger:
+  branches:
+    include:
+      - main
+      - feature/*
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  configuration: 'Release'
+  restoreFeedName: 'Test/Test'
+  buildProjects: '**/*.csproj'
+  unittestProjects: ''
+  publishProjects: '**/*.csproj'
+  publishWebProjects: false
+  zipAfterPublish: true
+  provisioning: true
+
+jobs:
+  - job: BuildTestPublish
+    displayName: Build, Test and Publish
+    steps:
+      # Restore, Build and Publish projects
+      - task: DotNetCoreCLI@2
+        displayName: restore (package)
+        inputs:
+          command: restore
+          projects: $(Build.SourcesDirectory)/src/${{ variables.buildProjects }}
+          vstsFeed: ${{ variables.restoreFeedName }}
+
+      - task: DotnetCoreCLI@2
+        displayName: build
+        inputs: 
+          command: build
+          projects: $(Build.SourcesDirectory)/src/${{ variables.buildProjects }}
+          arguments: --configuration ${{ variables.configuration }} --no-restore -p:TreatWarningAsErrors=true
+
+      - task: DotnetCoreCLI@2
+        displayName: publish
+        inputs:
+          command: publish
+          projects: $(Build.SourcesDirectory)/src/${{ variables.publishProjects }}
+          arguments: --configuration ${{ variables.configuration }} --no-restore --output $(Pipeline.Workspace)/drop/deployable
+          publishWebProjects: ${{ variables.publishWebProjects }}
+          zipAfterPublish: ${{ variables.zipAfterPublish }}
+
+      #Restore, Build and Run UnitTest projects
+      - task: DotnetCoreCLI@2
+        displayName: 'Restore (unit tests)'
+        condition: ${{ ne(variables.unittestProjects, '') }}
+        inputs:
+          command: restore
+          projects: $(Build.SourcesDirectory)/tests/${{ variables.unittestProjects }}
+          vstsFeed: ${{ variables.restoreFeedName }}
+
+      - task: DotnetCoreCLI@2
+        displayName: 'Build (unit tests)'
+        condition: ${{ ne(variables.unittestProjects, '') }}
+        inputs:
+          command: build
+          projects: $(Build.SourcesDirectory)/tests/${{ variables.unittestProjects }}
+          arguments: --configuration ${{ variables.configuration }} --no-restore -p:TreatWarningsAsErrors=true
+
+      - task: DotNetCoreCLI@2
+        displayName: run (unit tests)
+        condition: ${{ ne(variables.unittestProjects,'') }}
+        inputs:
+          command: test
+          projects: $(Build.SourcesDirectory)/tests/${{ variables.unittestProjects }}
+          publishTestResults: true
+          testRunTitle: Unit Tests
+          arguments: --configuration ${{ variables.configuration }} --no-build --no-restore -s $(Build.SourcesDirectory)/tests/unittests.runsettings
+
+      #Publish Project Artifacts
+      - task: PublishPipelineArtifact@1
+        displayName: publish project artifacts
+        inputs:
+          targetPath: $(Pipeline.Workspace)/drop
+          artifact: drop
+
+      # Clean Build.SourcesDirectory
+      - task: DeleteFiles@1
+        displayName: 'Delete files from $(Build.SourcesDirectory)'
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)'
+          Contents: '*'
